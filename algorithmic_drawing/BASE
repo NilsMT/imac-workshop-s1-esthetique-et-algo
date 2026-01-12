@@ -1,0 +1,142 @@
+' *********************
+' **                 **
+' **  DEMONSTRATIONS **
+' **                 **
+' *********************
+' 
+' Résolution de l'écran
+Xrsl%=640+((Xbios(4)=0)*320)-1
+Yrsl%=200-((Xbios(4)=2)*200)-1
+'
+' *********************
+' ** Lignes épaisses **
+' *********************
+'
+N=0
+X=Xrsl%
+Y=Yrsl%
+'
+Repeat
+  D=D+1                   !Epaisseur des lignes
+  Defline 1,D             !mise en place
+  N=N+D+1
+  X=X-D-10                !Détermination des coordonnées du rectangle
+  Y=Y-D-10
+  Draw N,N To N,Y To X,Y To X,N To N,N
+Until N>=Y
+'
+Pause 100
+'
+'
+' **********************
+' ** Coeurs stylisés  **
+' **********************
+'
+Intr=Yrsl%*0.4
+For Lstyle=1 To 3
+  Cls
+  For X=0 To 1000
+    Defline Lstyle,1,0,0
+    Line 90*Sin(X/100)+2*Intr,70*Sin(X/80)+Intr,80*Sin(X/70)+2*Intr,50*Sin(X/90)+Intr
+  Next X
+  Pause 50
+Next Lstyle                !Modification du style des lignes
+'
+Pause 50
+'
+' ****************
+' **  Figure 3  **
+' ****************
+'
+' Coordonées "V"
+Data 0,0, 0,2, 2,-1
+'
+Dim X%(3),Y%(3)
+Defline 1
+Graphmode 1
+'
+For I%=0 To 2
+  Read X% Y%               !Lecture des données
+  X%(I%)=X%*Xrsl%/15
+  Y%(I%)=Y%*Xrsl%/15
+Next I%
+'
+For X=1 TO 1100 Step 4
+  Line X/2,X/10*Sin(X/20)+X/20+Yrsl%/5,50*Sin(Xrsl%/X/70)+Yrsl%/2,X/4*Sin(X/120)+Xrsl%/5
+Next X
+'
+Pause 100
+'
+'
+' ****************
+' **  Figure 4  **
+' ****************
+'
+Cls
+For X=1 To 800 Step 0.5
+  Polyline 3,X%(),Y%() Offset 8*Xrsl%/X,X
+  Polyline 3,X%(),Y%() Offset Xrsl%/2-10*Xrsl%/X,X
+  X=X*1.01
+Next X
+'
+Pause 100
+'
+'
+' ****************
+' **  Figure 5  **
+' ****************
+'
+Cls
+Graphmode 3
+A=Xrsl%/2
+B=Yrsl%/2
+'
+For I=1 To 11
+  R=Yrsl%*0.7
+  For W=Pi/4 To 3.6 Step 0.05
+    X=R*Cos(W)
+    Y=R*Sin(W)
+    Line A+X,B-Y,A-Y,B-X
+    Line A-Y,B-X,A-X,B+X
+    Line A-X,B+Y,A+X,B-Y
+    Line A-X,B+Y,A+Y,B+X
+    Line A+X,B+X,A+X,B-Y
+    R=R*0.94
+  Next W
+  ' et l'on revient
+  R=R/0.94
+  For W=3.6 To Pi/4 Step -0.05
+    X=R*Cos(W)
+    Y=R*Sin(W)
+    Line A+X,B-Y,A-Y,B-X
+    Line A-Y,B-X,A-X,B+X
+    Line A-X,B+Y,A+X,B-Y
+    Line A-X,B+Y,A+Y,B+X
+    Line A+X,B+X,A+X,B-Y
+    R=R/0.94
+  Next W
+Next I
+'
+Pause 100
+'
+'
+' *******************
+' **  Motif Radar  **
+' *******************
+'
+Cls
+Graphmode 3
+'
+I%=0
+Repeat
+  For X%=I% To Xrsl%-I%
+    Line X%,I%,Xrsl%-X%,Yrsl%-I%
+  Next X%
+  For Y%=Yrsl%-I% To I% Step -1
+    Line I%,Y%,Xrsl%-I%,Yrsl%-Y%
+  Next Y%
+  I%=I%+2
+Until Inkey$<>"" Or I%>Yrsl%
+'
+'
+Edit
