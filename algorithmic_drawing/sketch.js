@@ -50,25 +50,30 @@ function draw() {
         } while (n < y); // Until N>=Y
     } else if (mode == 1) {
         canvasResize(400, 400);
-        colorMode(HSB, 360, 100, 100); // hue 0-360, saturation & brightness 0-100
+        colorMode(HSB, 360, 100, 100); //HSB https://fr.wikipedia.org/wiki/Teinte_Saturation_Valeur
 
-        let a = width / 2;
-        let b = height / 2;
+        let a = width / 2; //A=Xrsl%/2
+        let b = height / 2; //B=Yrsl%/2
         for (let i = 1; i <= 2; i++) {
-            let r = height * 0.7;
+            //For I=1 To 11
+            let r = height * 0.7; //R=Yrsl%*0.7
             let rMax = r;
             for (let w = Math.PI / 4; w <= 3.6; w += 0.05) {
-                let x = r * Math.cos(w);
-                let y = r * Math.sin(w);
-                line(a + x, b - y, a - y, b - x);
-                line(a - y, b - x, a - x, b + x);
-                line(a - x, b + y, a + x, b - y);
-                line(a - x, b + y, a + y, b + x);
-                line(a + y, b + x, a + x, b - y);
-                r = r * 0.94;
+                //For W=Pi/4 To 3.6 Step 0.05
 
+                //Color
                 let hueValue = map(r, 0, rMax, 0, 360); //map r to hue rotation
                 stroke(hueValue, 100, 100); //set color from hue
+                //
+
+                let x = r * Math.cos(w); //X=R*Cos(W)
+                let y = r * Math.sin(w); //Y=R*Sin(W)
+                line(a + x, b - y, a - y, b - x); //Line A+X,B-Y,A-Y,B-X
+                line(a - y, b - x, a - x, b + x); //Line A-Y,B-X,A-X,B+X
+                line(a - x, b + y, a + x, b - y); //Line A-X,B+Y,A+X,B-Y
+                line(a - x, b + y, a + y, b + x); //Line A-X,B+Y,A+Y,B+X
+                line(a + y, b + x, a + x, b - y); //Line A+X,B+X,A+X,B-Y
+                r = r * 0.94; //R=R*0.94
             }
         }
     }
