@@ -6,7 +6,7 @@ let config = {
     cellState: {
         0: {
             name: "EMPTY",
-            color: [255, 255, 255],
+            color: [0, 0, 0],
             minHeight: 0,
             maxHeight: 64,
             spawnPercentage: 1.0,

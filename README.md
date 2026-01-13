@@ -25,7 +25,13 @@ le "halo" jaune est fait avec des lignes et le "coeur" noir avec un simple cercl
 
 ## Cellular Automata
 
-> XXX
+Contient des sketches p5.js pour le jeu de la vie de conway, des automates cellulaire et une génération de caverne avec minerais et différentes cellules
+
+`conway.js` : le fichier avec le jeu de la vie
+`cavern.js` : le fichier avec la génération de caverne avancée
+`sketch.js` : le fichier avec la génération de caverne avancée
+
+> ⚠️ J'ai utilisé ChatGPT pour m'aider sur la génération des "minerais" car je suis (encore) très mauvais en probabilité
 
 ## Digital Litterature
 
