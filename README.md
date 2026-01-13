@@ -18,6 +18,8 @@ Ce dépôt contient les fichiers sources pour le workshop "Esthétique & Algorit
 
 Contient des sketches p5.js pour les lignes épaisses, la figure 5 et un trou noir.
 
+Tout est inclus dans un seul fichier
+
 Le trou noir n'utilise pas la réel modélisation physique (plus complexe) et utilise uniquement la trigonométrie pour créer une représentation visuelle.
 le "halo" jaune est fait avec des lignes et le "coeur" noir avec un simple cercle noir.
 
@@ -27,11 +29,14 @@ le "halo" jaune est fait avec des lignes et le "coeur" noir avec un simple cercl
 
 Contient des sketches p5.js pour le jeu de la vie de conway, des automates cellulaire et une génération de caverne avec minerais et différentes cellules
 
-`conway.js` : le fichier avec le jeu de la vie
-`cavern.js` : le fichier avec la génération de caverne avancée
-`sketch.js` : le fichier avec la génération de caverne avancée
+Voici les fichiers :
 
-> ⚠️ J'ai utilisé ChatGPT pour m'aider sur la génération des "minerais" car je suis (encore) très mauvais en probabilité
+-   `conway.js` : le fichier avec le jeu de la vie
+-   `cavern.js` : le fichier avec la génération de caverne avancée
+-   `cavern_better.js` : le fichier avec la génération de caverne avancée
+-   `sketch.js` : le fichier avec la génération de caverne avancée MAIS réécrit par moi
+
+> ⚠️ J'ai utilisé ChatGPT pour m'aider sur la génération des "minerais" car je suis (encore) très mauvais en probabilité sur le `cavern_better.js`
 
 ## Digital Litterature
 

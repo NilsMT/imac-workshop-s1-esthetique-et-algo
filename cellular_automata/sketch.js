@@ -9,7 +9,7 @@ let config = {
     additionalDirtColumnLength: 3,
 
     cellType: [
-        { id: 0, name: "EMPTY", color: [255, 255, 255] },
+        { id: 0, name: "EMPTY", color: [150, 200, 255] },
         { id: 1, name: "GRASS", color: [21, 194, 50] },
         { id: 2, name: "DIRT", color: [119, 69, 19] },
         { id: 3, name: "STONE", color: [112, 128, 144], range: { min: 16 } },
@@ -145,7 +145,7 @@ let phase = buildPhases();
 //setup
 function setup() {
     row = 128;
-    col = windowWidth / config.cellSize - 5;
+    col = (windowWidth * 2) / config.cellSize - 5;
 
     createCanvas(config.cellSize * col + 5, config.cellSize * row + 5);
 
