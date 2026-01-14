@@ -63,3 +63,7 @@ Déclinaison de `cavern_1` en typant les cellules vivantes à un bloc, puis en e
 ### **minecraft_2** - Générateur de Terrain Avancé
 
 Réécriture de ``minecraft_1` mais en essayant par moi même la répartition probabilistique
+
+### Réflexion & Conception
+
+Étant tombé auparavant sur une vidéo expliquant que la génération des caverne dans un jeu nommé Noïta utilisait des automates cellulaires. J'ai décidé d'en faire mon objectif, et de faire une coloration ressemblant à celle de Minecraft (i.e la répartition des blocs selon des probabilités et des contraintes d'apparitions)

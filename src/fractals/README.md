@@ -16,10 +16,7 @@ Génération d'arbres fractals utilisant un algorithme d'arbre binaire récursif
 
 Il y a des particules qui explore l'arbre aléatoirement
 
-**Caractéristiques:**
+### Réflexion & Conception
 
--   Arbre binaire récursif
--   Profondeur et nombre de branches configurables
--   Réduction progressive de la longueur (facteur 0.7)
--   Système de particules suivant les branches
--   Sliders interactifs pour tous les paramètres
+Je voulais d'abord faire un générateur de montagne en 3D en utilisant le fractal aléatoire [DLA](https://en.wikipedia.org/wiki/Diffusion-limited_aggregation) mais prenant conscience de mes limites j'ai réfléchi à comment exploité un fractal, et j'ai juste pensé aux [Arbres binaires de recherche](https://en.wikipedia.org/wiki/Binary_search_tree) avec l'exploration de chaque noeuds.
+Ce qui ici pourrait être une particule explorant le fractal aléatoirement. L'arbre utilise le fractal [d'arbre canopé](https://en.wikipedia.org/wiki/Fractal_canopy) mais modifié pour être radial.

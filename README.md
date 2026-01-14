@@ -2,6 +2,12 @@
 
 Ce dépôt contient les fichiers sources pour le workshop "Esthétique & Algorithmique"
 
+Aka. des dessins jolis fait avec du code et p5.js
+
+## Lancement
+
+Ouvrez le fichier [index.html](./index.html) dans un navigateur
+
 ## Structure du dépôt
 
 ```

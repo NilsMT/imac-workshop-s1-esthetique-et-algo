@@ -25,3 +25,7 @@ L'algorithme est constitué de trois parties :
 ### **figure5 et lignes_epaisses**
 
 J'ai retranscrit le code de la figure 5 et de lignes_epaisses en y ajoutant une teinte dans le spectre chromatique avec l'espace de couleur HSB.
+
+### Réflexion & Conception
+
+Pour `blackhole` J'ai exploré le tracé trigonométrique d'une forme ressemblant celle des trous noir car je suis fasciné par leur forme si particulière, ChatGPT m'a aidé pour les lignes horizontales car je ne voyais pas comment retranscrire l'idée en formule mathématique.
