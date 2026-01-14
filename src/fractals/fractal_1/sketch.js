@@ -18,11 +18,11 @@ let angleSpread = Math.PI / 4;
 let branchLength = 100;
 
 //not in slider
-let particleSize = 2;
-let branchSize = 1;
-
-const START_HUE = 240; //blue at start
-const END_HUE = 0; //red at end
+const PARTICLE_SIZE = 2;
+const BRANCH_SIZE = 1;
+const BRANCH_START_HUE = 240; //blue at start
+const BRANCH_END_HUE = 0; //red at end
+const PARTICLE_COLOR = [200, 0, 255];
 
 //sliders
 let numSlider;
@@ -40,7 +40,7 @@ let particles = [];
 function setup() {
     createCanvas(CANVAS_HEIGHT, CANVAS_WIDTH);
 
-    frameRate(30);
+    frameRate(60);
 
     background(0);
 
@@ -101,7 +101,7 @@ function drawSliders() {
     numSlider = createSlider(1, 15, maxBranch, 1);
     numSlider.position(UI.marginX, UI.marginY);
 
-    depthSlider = createSlider(1, 8, maxDepth, 1);
+    depthSlider = createSlider(1, 10, maxDepth, 1);
     depthSlider.position(UI.marginX + UI.colSpacing, UI.marginY);
 
     spawnRateSlider = createSlider(0, 250, spawnRate, 1);
@@ -111,7 +111,7 @@ function drawSliders() {
     treeOpacitySlider = createSlider(0, 100, treeOpacity, 1);
     treeOpacitySlider.position(UI.marginX, UI.marginY + UI.rowHeight);
 
-    angleSlider = createSlider(0, PI / 2, angleSpread, 0.001);
+    angleSlider = createSlider(0, PI / 2, angleSpread, PI / 512);
     angleSlider.position(UI.marginX + UI.colSpacing, UI.marginY + UI.rowHeight);
 
     lenSlider = createSlider(0, 200, branchLength, 1);
@@ -139,14 +139,14 @@ function drawUI() {
         UI.marginY - off.y
     );
     text(
-        "Particles: " + spawnRate,
+        "Particles rate: " + spawnRate + "/frame",
         UI.marginX + UI.colSpacing * 2 - off.x,
         UI.marginY - off.y
     );
 
     //row 1
     text(
-        "Tree opacity: " + treeOpacity + "%",
+        "Branch opacity: " + treeOpacity + "%",
         UI.marginX - off.x,
         UI.marginY + UI.rowHeight - off.y
     );
@@ -182,7 +182,7 @@ function createBranchTree(pos, len, depth, angle = 0) {
     let dy = -len * cos(angle);
     let endPos = p5.Vector.add(pos, createVector(dx, dy));
 
-    let hueValue = map(depth, 0, maxDepth, START_HUE, END_HUE);
+    let hueValue = map(depth, 0, maxDepth, BRANCH_START_HUE, BRANCH_END_HUE);
     stroke(hueValue, 100, 100, treeOpacity / 100);
 
     line(pos.x, pos.y, endPos.x, endPos.y);
@@ -213,8 +213,8 @@ function spawnParticle() {
 
 //move the particles, following a random sub-branch
 function moveParticles() {
-    stroke(200, 0, 255);
-    strokeWeight(particleSize);
+    stroke(PARTICLE_COLOR);
+    strokeWeight(PARTICLE_SIZE);
 
     //for each particles
     for (let i = particles.length - 1; i >= 0; i--) {
@@ -235,5 +235,5 @@ function moveParticles() {
         }
     }
 
-    strokeWeight(branchSize);
+    strokeWeight(BRANCH_SIZE);
 }
