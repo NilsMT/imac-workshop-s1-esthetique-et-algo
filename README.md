@@ -35,7 +35,7 @@ Voici les fichiers :
 -   `cavern.js` : le fichier avec la génération de caverne avancée
 -   `cavern_textured_1.js` : le fichier avec la génération de caverne avancée
 -   `cavern_textured_2.js` : le fichier avec la génération de caverne avancée MAIS réécrit par moi
--   `sketch.js` : une experimentation sur de la géénration de caverne avec un motif particulier
+-   `sketch.js` : une experimentation sur de la génération de caverne avec un motif particulier
 
 > ⚠️ J'ai utilisé ChatGPT pour m'aider sur la génération des "minerais" car je suis (encore) très mauvais en probabilité sur le `cavern_better.js`
 

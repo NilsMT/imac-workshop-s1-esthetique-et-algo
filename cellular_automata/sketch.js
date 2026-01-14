@@ -5,6 +5,9 @@ let board = [];
 
 let pauseBtn;
 let paused = true;
+
+let isRuleB = false;
+
 let frameCount = 0;
 let lastSpaceTime = 0;
 let lastRTime = 0;
@@ -22,8 +25,11 @@ function caveRule(snapshot, i, j, n) {
 
 function hollowRule(snapshot, i, j, n) {
     if (snapshot[i][j] === 1) {
-        // wall survives if 4+ neighbors are walls
+        // wall survives if 7- neighbors are walls
         return n >= 7 ? 0 : 1;
+    } else if (isRuleB) {
+        // wall survives if 7- neighbors are walls
+        return n >= 6 ? 1 : 0;
     }
 }
 
@@ -46,6 +52,13 @@ function setup() {
         fillBoard();
     });
     resetBtn.parent(container);
+
+    let ruleBtn = createButton("Règle A");
+    ruleBtn.mousePressed(function () {
+        isRuleB = !isRuleB;
+        ruleBtn.html(isRuleB ? "Règle B" : "Règle A");
+    });
+    ruleBtn.parent(container);
 
     fillBoard();
     frameRate(15);
@@ -120,7 +133,7 @@ function updateBoard() {
         for (let j = 0; j < col; j++) {
             let n = countNeighbors(i, j);
 
-            if (frameCount > 30) {
+            if (frameCount > 5) {
                 board[i][j] = hollowRule(snapshot, i, j, n);
             } else {
                 board[i][j] = caveRule(snapshot, i, j, n);
