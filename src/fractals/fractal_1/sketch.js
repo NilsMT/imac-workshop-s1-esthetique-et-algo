@@ -20,6 +20,8 @@ let angleSpread = Math.PI / 6;
 let particleSize = 2;
 let branchSize = 1;
 let baseLength = 100;
+const START_HUE = 240; //blue at start
+const END_HUE = 0; //red at end
 
 //sliders
 let numSlider;
@@ -97,7 +99,7 @@ function drawSliders() {
     depthSlider = createSlider(1, 8, maxDepth, 1);
     depthSlider.position(UI.marginX + UI.colSpacing, UI.marginY);
 
-    spawnRateSlider = createSlider(0, 250, spawnRate, 1);
+    spawnRateSlider = createSlider(1, 250, spawnRate, 1);
     spawnRateSlider.position(UI.marginX + UI.colSpacing * 2, UI.marginY);
 
     //row 1
@@ -146,13 +148,14 @@ function drawUI() {
 
 //create the tree (data + visual)
 function createTree() {
-    stroke(255, 180);
+    colorMode(HSB, 360, 100, 100);
     for (let i = 0; i < maxBranch; i++) {
         let angle = (TWO_PI * i) / maxBranch;
         treeRoots.push(
             createBranchTree(createVector(0, 0), baseLength, 0, angle)
         );
     }
+    colorMode(RGB, 255, 255, 255);
 }
 
 //one iteration of the tree
@@ -162,6 +165,9 @@ function createBranchTree(pos, len, depth, angle = 0) {
     let dx = len * sin(angle);
     let dy = -len * cos(angle);
     let endPos = p5.Vector.add(pos, createVector(dx, dy));
+
+    let hueValue = map(depth, 0, maxDepth, START_HUE, END_HUE);
+    stroke(hueValue, 100, 100);
 
     line(pos.x, pos.y, endPos.x, endPos.y);
 
@@ -191,7 +197,7 @@ function spawnParticle() {
 
 //move the particles, following a random sub-branch
 function moveParticles() {
-    stroke(255, 100, 200);
+    stroke(200, 0, 255);
     strokeWeight(particleSize);
 
     //for each particles
