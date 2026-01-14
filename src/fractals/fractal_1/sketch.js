@@ -11,10 +11,10 @@ const UI = {
 
 //change \w slider
 let maxBranch = 8;
-let maxDepth = 8;
+let maxDepth = 7;
 let spawnRate = 50;
-let fadeTime = 50;
-let angleSpread = Math.PI / 6;
+let fadeTime = 0;
+let angleSpread = Math.PI / 4;
 
 //not in slider
 let particleSize = 2;
