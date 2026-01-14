@@ -1,27 +1,223 @@
-let width = 640;
-let height = 400;
+//config
+//UI
+const CANVAS_WIDTH = 800;
+const CANVAS_HEIGHT = 800;
+const UI = {
+    marginX: 20, // left-right margin
+    marginY: 30, // top-bottom margin
+    rowHeight: 50, // vertical spacing between rows
+    colSpacing: 150, // horizontal spacing between sliders
+};
 
-let slider;
-let value = 0;
+//change \w slider
+let maxBranch = 8;
+let maxDepth = 8;
+let maxParticles = 5000;
+let fadeTime = 50;
+let angleSpread = Math.PI / 6;
+
+//not in slider
+let particleSize = 2;
+let branchSize = 1;
+let baseLength = 100;
+
+//sliders
+let numSlider;
+let depthSlider;
+let particleSlider;
+let fadeSlider;
+let angleSlider;
+
+//data
+let treeRoots = [];
+let particles = [];
 
 //setup
 function setup() {
-    createCanvas(640, 400);
+    createCanvas(CANVAS_HEIGHT, CANVAS_WIDTH);
+
+    frameRate(30);
+
     background(0);
 
-    frameRate(15);
-
-    slider = createSlider(1, 15, 1, 1);
+    drawSliders();
 }
 
-//update
+//frame update
 function draw() {
-    value = slider.value();
+    let newMaxBranch = numSlider.value();
+    let newMaxDepth = depthSlider.value();
+    let newMaxParticles = particleSlider.value();
+    let newFadeTime = fadeSlider.value();
+    let newAngleSpread = angleSlider.value();
 
-    tree(0);
+    if (
+        maxBranch !== newMaxBranch ||
+        maxDepth !== newMaxDepth ||
+        maxParticles !== newMaxParticles ||
+        fadeTime != newFadeTime ||
+        angleSpread != newAngleSpread
+    ) {
+        treeRoots = [];
+        particles = [];
+
+        maxBranch = newMaxBranch;
+        maxDepth = newMaxDepth;
+        maxParticles = newMaxParticles;
+        fadeTime = newFadeTime;
+        angleSpread = newAngleSpread;
+
+        clear();
+        background(0);
+    }
+
+    background(30, fadeTime);
+    translate(width / 2, height / 2);
+
+    drawUI();
+
+    if (treeRoots.length === 0) {
+        createTree();
+    }
+
+    if (particles.length < maxParticles) {
+        spawnAllParticles();
+    }
+
+    moveParticles();
 }
 
-function tree(h) {
-    //break condition
-    if (h > value) return;
+//draw the UI sliders (using a flex-wrap like thing)
+function drawSliders() {
+    numSlider = createSlider(1, 15, maxBranch, 1);
+    numSlider.position(UI.marginX, UI.marginY);
+
+    depthSlider = createSlider(1, 8, maxDepth, 1);
+    depthSlider.position(UI.marginX + UI.colSpacing, UI.marginY);
+
+    particleSlider = createSlider(0, 5000, maxParticles, 100);
+    particleSlider.position(UI.marginX + UI.colSpacing * 2, UI.marginY);
+
+    // Row 1
+    fadeSlider = createSlider(0, 100, fadeTime, 1);
+    fadeSlider.position(UI.marginX, UI.marginY + UI.rowHeight);
+
+    angleSlider = createSlider(0, PI / 2, angleSpread, 0.001);
+    angleSlider.position(UI.marginX + UI.colSpacing, UI.marginY + UI.rowHeight);
+}
+
+//draw the UI texts (using a flex-wrap like thing)
+function drawUI() {
+    fill(255);
+    noStroke();
+    textSize(14);
+
+    const off = {
+        x: width / 2,
+        y: height / 2 + 10,
+    };
+
+    // Row 0
+    text("Branches: " + maxBranch, UI.marginX - off.x, UI.marginY - off.y);
+    text(
+        "Depth: " + maxDepth,
+        UI.marginX + UI.colSpacing - off.x,
+        UI.marginY - off.y
+    );
+    text(
+        "Particles: " + maxParticles,
+        UI.marginX + UI.colSpacing * 2 - off.x,
+        UI.marginY - off.y
+    );
+
+    // Row 1
+    text(
+        "Fade time: " + fadeTime,
+        UI.marginX - off.x,
+        UI.marginY + UI.rowHeight - off.y
+    );
+    text(
+        "Branch angle: " + round(degrees(angleSpread)) + "°",
+        UI.marginX + UI.colSpacing - off.x,
+        UI.marginY + UI.rowHeight - off.y
+    );
+}
+
+//create the tree (data + visual)
+function createTree() {
+    stroke(255, 180);
+    for (let i = 0; i < maxBranch; i++) {
+        let angle = (TWO_PI * i) / maxBranch;
+        treeRoots.push(
+            createBranchTree(createVector(0, 0), baseLength, 0, angle)
+        );
+    }
+}
+
+//one iteration of the tree
+function createBranchTree(pos, len, depth, angle = 0) {
+    if (depth > maxDepth) return null;
+
+    let dx = len * sin(angle);
+    let dy = -len * cos(angle);
+    let endPos = p5.Vector.add(pos, createVector(dx, dy));
+
+    line(pos.x, pos.y, endPos.x, endPos.y);
+
+    let branch = { pos: pos.copy(), end: endPos.copy(), children: [] };
+
+    if (depth < maxDepth) {
+        branch.children.push(
+            createBranchTree(endPos, len * 0.7, depth + 1, angle + angleSpread)
+        );
+        branch.children.push(
+            createBranchTree(endPos, len * 0.7, depth + 1, angle - angleSpread)
+        );
+    }
+
+    return branch;
+}
+
+//spawn all particles at once
+function spawnAllParticles() {
+    particles = [];
+    for (let i = 0; i < maxParticles; i++) {
+        spawnParticle();
+    }
+}
+
+//spawn a particle (or not if exceeding the limit)
+function spawnParticle() {
+    if (treeRoots.length === 0) return;
+    particles.push({
+        branch: random(treeRoots),
+        t: 0,
+        speed: random(0.01, 0.03),
+    });
+}
+
+//move the particles, following a random sub-branch
+function moveParticles() {
+    stroke(255, 100, 200);
+    strokeWeight(particleSize);
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+        let p = particles[i];
+        let pos = p5.Vector.lerp(p.branch.pos, p.branch.end, p.t);
+        point(pos.x, pos.y);
+
+        p.t += p.speed;
+
+        //take a new target if reached current
+        if (p.t >= 1) {
+            if (p.branch.children.length > 0) {
+                p.branch = random(p.branch.children);
+                p.t = 0;
+            } else {
+                particles.splice(i, 1);
+            }
+        }
+    }
+
+    strokeWeight(branchSize);
 }
