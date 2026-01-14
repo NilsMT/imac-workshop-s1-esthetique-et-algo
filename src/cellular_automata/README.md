@@ -16,7 +16,7 @@ Explorations d'algorithmes d'automates cellulaires pour la génération de struc
 
 Il est possible de dessiner en cliquant sur une case.
 
-La touche <kbd>Entrée ⏎</kbd> permet de mettre en pause ou de reprendre, et la touche <kbd>R</kbd> permet de réinitialiser le plateau.
+La touche <kbd>E</kbd> permet de mettre en pause ou de reprendre, et la touche <kbd>R</kbd> permet de réinitialiser le plateau. Pour `cavern_2` il y a la touche <kbd>A</kbd> qui permet de changer la règle du motif
 
 ## Projets
 

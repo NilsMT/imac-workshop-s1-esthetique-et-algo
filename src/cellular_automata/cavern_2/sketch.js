@@ -6,11 +6,13 @@ let board = [];
 let pauseBtn;
 let paused = true;
 
+let ruleBtn;
 let isRuleB = false;
 
 let frameCount = 0;
-let lastSpaceTime = 0;
+let lastETime = 0;
 let lastRTime = 0;
+let lastATime = 0;
 const cooldown = 250; //ms
 
 function caveRule(snapshot, i, j, n) {
@@ -53,7 +55,7 @@ function setup() {
     });
     resetBtn.parent(container);
 
-    let ruleBtn = createButton("Règle A");
+    ruleBtn = createButton("Règle A");
     ruleBtn.mousePressed(function () {
         isRuleB = !isRuleB;
         ruleBtn.html(isRuleB ? "Règle B" : "Règle A");
@@ -70,16 +72,24 @@ function draw() {
     renderBoard();
     updateBoard();
 
-    if (keyIsDown(13) && millis() - lastSpaceTime > cooldown) {
-        //space
+    if (keyIsDown(69) && millis() - lastETime > cooldown) {
+        //e
         handlePause();
-        lastSpaceTime = millis();
+        lastETime = millis();
     }
 
     if (keyIsDown(82) && millis() - lastRTime > cooldown) {
         //r
         fillBoard();
         lastRTime = millis();
+    }
+
+    if (keyIsDown(65) && millis() - lastATime > cooldown) {
+        //a
+        isRuleB = !isRuleB;
+        ruleBtn.html(isRuleB ? "Règle B" : "Règle A");
+        fillBoard();
+        lastATime = millis();
     }
 
     if (mouseIsPressed) {

@@ -41,8 +41,8 @@ function draw() {
     renderBoard();
     updateBoard();
 
-    if (keyIsDown(13)) {
-        //space to pause
+    if (keyIsDown(69)) {
+        //e to pause
         handlePause();
     }
 }

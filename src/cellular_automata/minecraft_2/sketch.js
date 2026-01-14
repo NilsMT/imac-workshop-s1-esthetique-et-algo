@@ -115,7 +115,7 @@ let stoneTreshhold = [];
 
 let pauseBtn;
 let paused = true;
-let lastSpaceTime = 0;
+let lastETime = 0;
 let lastRTime = 0;
 const cooldown = 250; //ms
 
@@ -174,10 +174,10 @@ function setup() {
 //update
 function draw() {
     //key input
-    if (keyIsDown(13) && millis() - lastSpaceTime > cooldown) {
-        //space
+    if (keyIsDown(69) && millis() - lastETime > cooldown) {
+        //e
         handlePause();
-        lastSpaceTime = millis();
+        lastETime = millis();
     }
 
     if (keyIsDown(82) && millis() - lastRTime > cooldown) {
