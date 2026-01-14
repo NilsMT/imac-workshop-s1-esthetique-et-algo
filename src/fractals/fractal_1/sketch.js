@@ -1,18 +1,18 @@
 //config
-//UI
+//UI data
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 800;
 const UI = {
-    marginX: 20, // left-right margin
-    marginY: 30, // top-bottom margin
-    rowHeight: 50, // vertical spacing between rows
-    colSpacing: 150, // horizontal spacing between sliders
+    marginX: 20, //left-right margin
+    marginY: 30, //top-bottom margin
+    rowHeight: 50, //vertical spacing between rows
+    colSpacing: 150, //horizontal spacing between sliders
 };
 
 //change \w slider
 let maxBranch = 8;
 let maxDepth = 8;
-let maxParticles = 5000;
+let spawnRate = 50;
 let fadeTime = 50;
 let angleSpread = Math.PI / 6;
 
@@ -24,7 +24,7 @@ let baseLength = 100;
 //sliders
 let numSlider;
 let depthSlider;
-let particleSlider;
+let spawnRateSlider;
 let fadeSlider;
 let angleSlider;
 
@@ -47,14 +47,14 @@ function setup() {
 function draw() {
     let newMaxBranch = numSlider.value();
     let newMaxDepth = depthSlider.value();
-    let newMaxParticles = particleSlider.value();
+    let newSpawnRate = spawnRateSlider.value();
     let newFadeTime = fadeSlider.value();
     let newAngleSpread = angleSlider.value();
 
     if (
         maxBranch !== newMaxBranch ||
         maxDepth !== newMaxDepth ||
-        maxParticles !== newMaxParticles ||
+        spawnRate !== newSpawnRate ||
         fadeTime != newFadeTime ||
         angleSpread != newAngleSpread
     ) {
@@ -63,7 +63,7 @@ function draw() {
 
         maxBranch = newMaxBranch;
         maxDepth = newMaxDepth;
-        maxParticles = newMaxParticles;
+        spawnRate = newSpawnRate;
         fadeTime = newFadeTime;
         angleSpread = newAngleSpread;
 
@@ -80,8 +80,9 @@ function draw() {
         createTree();
     }
 
-    if (particles.length < maxParticles) {
-        spawnAllParticles();
+    let toSpawn = spawnRate * (deltaTime / 1000);
+    for (let i = 0; i < toSpawn; i++) {
+        spawnParticle();
     }
 
     moveParticles();
@@ -89,16 +90,17 @@ function draw() {
 
 //draw the UI sliders (using a flex-wrap like thing)
 function drawSliders() {
+    //row 0
     numSlider = createSlider(1, 15, maxBranch, 1);
     numSlider.position(UI.marginX, UI.marginY);
 
     depthSlider = createSlider(1, 8, maxDepth, 1);
     depthSlider.position(UI.marginX + UI.colSpacing, UI.marginY);
 
-    particleSlider = createSlider(0, 5000, maxParticles, 100);
-    particleSlider.position(UI.marginX + UI.colSpacing * 2, UI.marginY);
+    spawnRateSlider = createSlider(0, 250, spawnRate, 1);
+    spawnRateSlider.position(UI.marginX + UI.colSpacing * 2, UI.marginY);
 
-    // Row 1
+    //row 1
     fadeSlider = createSlider(0, 100, fadeTime, 1);
     fadeSlider.position(UI.marginX, UI.marginY + UI.rowHeight);
 
@@ -110,14 +112,13 @@ function drawSliders() {
 function drawUI() {
     fill(255);
     noStroke();
-    textSize(14);
 
     const off = {
         x: width / 2,
         y: height / 2 + 10,
     };
 
-    // Row 0
+    //row 0
     text("Branches: " + maxBranch, UI.marginX - off.x, UI.marginY - off.y);
     text(
         "Depth: " + maxDepth,
@@ -125,12 +126,12 @@ function drawUI() {
         UI.marginY - off.y
     );
     text(
-        "Particles: " + maxParticles,
+        "Particles: " + spawnRate,
         UI.marginX + UI.colSpacing * 2 - off.x,
         UI.marginY - off.y
     );
 
-    // Row 1
+    //row 1
     text(
         "Fade time: " + fadeTime,
         UI.marginX - off.x,
@@ -178,14 +179,6 @@ function createBranchTree(pos, len, depth, angle = 0) {
     return branch;
 }
 
-//spawn all particles at once
-function spawnAllParticles() {
-    particles = [];
-    for (let i = 0; i < maxParticles; i++) {
-        spawnParticle();
-    }
-}
-
 //spawn a particle (or not if exceeding the limit)
 function spawnParticle() {
     if (treeRoots.length === 0) return;
@@ -201,6 +194,7 @@ function moveParticles() {
     stroke(255, 100, 200);
     strokeWeight(particleSize);
 
+    //for each particles
     for (let i = particles.length - 1; i >= 0; i--) {
         let p = particles[i];
         let pos = p5.Vector.lerp(p.branch.pos, p.branch.end, p.t);

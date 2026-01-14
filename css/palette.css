@@ -4,11 +4,12 @@
     --padding: 5px;
 
     font-family: "Courier New", Courier, monospace;
+    font-size: 16px;
 }
 
-a,
+a:not(.special),
 button {
-    background: #ff00d0;
+    background: #d0d0d0;
     padding: var(--padding);
     color: #000;
     text-decoration: none;
@@ -19,12 +20,15 @@ button {
     box-sizing: border-box;
 }
 
-a:hover,
+a:not(.special):hover,
 button:hover {
-    text-decoration: underline;
+    filter: brightness(0.9);
+    border-style: dotted;
     cursor: pointer;
 }
 
-#backlink {
-    background: #9500ff;
+.rootlink {
+    gap: 0;
+    display: flex;
+    flex-direction: row;
 }
