@@ -1,0 +1,30 @@
+:root {
+    --gap: 5px;
+    --border: 2px;
+    --padding: 5px;
+
+    font-family: "Courier New", Courier, monospace;
+}
+
+a,
+button {
+    background: #ff00d0;
+    padding: var(--padding);
+    color: #000;
+    text-decoration: none;
+    border: #000 solid var(--border);
+
+    width: fit-content;
+
+    box-sizing: border-box;
+}
+
+a:hover,
+button:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+#backlink {
+    background: #9500ff;
+}

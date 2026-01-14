@@ -1,0 +1,7 @@
+@import url(./palette.css);
+
+#index {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+}

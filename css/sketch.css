@@ -1,0 +1,19 @@
+@import url(./palette.css);
+
+#container {
+    position: sticky;
+    top: var(--padding);
+    left: var(--padding);
+    padding: var(--padding);
+
+    width: fit-content;
+
+    display: flex;
+    flex-direction: row;
+    gap: var(--gap);
+}
+
+body {
+    display: flex;
+    flex-direction: column-reverse;
+}
