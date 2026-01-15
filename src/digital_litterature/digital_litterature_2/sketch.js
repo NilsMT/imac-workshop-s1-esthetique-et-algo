@@ -9,6 +9,16 @@ const outputElement = document.getElementById("output");
 const inputElement = document.getElementById("input");
 
 ////////////////////////////////
+//  ADDITIONAL STUFF
+////////////////////////////////
+function mulberry32(seed) {
+    let t = (seed += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+
+////////////////////////////////
 //  JSON Dominos
 ////////////////////////////////
 
@@ -69,10 +79,11 @@ function initJson() {
     console.log(SPE_DOMINOS);
 }
 
-//orientation is "x" or "y"
-function giveAdequateDominos(code, json) {
+//code=  UNICODE, json is the selected set of dominos, pos is the position of the char in the word
+function giveDominos(code, json, pos) {
     let result = "";
     let ori = json["0-0"] === DOMINOS["x"]["0-0"] ? "x" : "y";
+    let originalCode = code;
     let keys = Object.keys(json);
 
     //loop until no more to give
@@ -99,8 +110,10 @@ function giveAdequateDominos(code, json) {
         });
 
         if (candidates.length > 0) {
-            //choose one of them at random
-            let choice = Math.floor(Math.random() * candidates.length);
+            //choose one of them at random (deterministic) https://github.com/cprosche/mulberry32
+            let choice = Math.floor(
+                mulberry32(originalCode + pos) * candidates.length
+            );
             let chosenKey = candidates[choice];
 
             let choseVal = getDominoValue(chosenKey);
@@ -130,25 +143,27 @@ function giveAdequateDominos(code, json) {
 
 function translate() {
     //split the text to get each word
-    let lst = config.TEXT.split(" ");
+    let lst = config.TEXT.split(new RegExp("\\s+"));
     let ori = config.START_ORI;
 
     //loop over each word
     lst.forEach((word) => {
         //translate the word into dominoes
-        let adequateWord = word
+        let dominosWord = word
             .split("")
-            .map((char) => {
+            .map((char, i) => {
                 //translate each char of word
                 let code = char.charCodeAt(0);
-                return giveAdequateDominos(code, DOMINOS[ori]);
+                return giveDominos(code, DOMINOS[ori], i);
             })
             .join("");
 
         console.warn(word);
-        console.log("%c" + adequateWord, "font-size: 24px");
+        //clean output for dominos
+        let cleanDominos = dominosWord.replace(/<br\s*\/?>/gi, "");
+        console.log("%c" + cleanDominos, "font-size: 24px");
 
-        outputElement.innerHTML += adequateWord + "<br>";
+        outputElement.innerHTML += dominosWord;
 
         //switch direction
         ori = ori === "x" ? "y" : "x";
