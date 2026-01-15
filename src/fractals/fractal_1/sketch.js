@@ -89,7 +89,7 @@ function draw() {
         createTree();
     }
 
-    let toSpawn = spawnRate * (deltaTime / 1000);
+    let toSpawn = config.spawnRate * (deltaTime / 1000);
     for (let i = 0; i < toSpawn; i++) {
         spawnParticle();
     }
@@ -157,24 +157,24 @@ function drawUI() {
         config.UI.marginY - off.y
     );
     text(
-        "Particles rate: " + spawnRate + "/frame",
+        "Particles rate: " + config.spawnRate + "/frame",
         config.UI.marginX + config.UI.colSpacing * 2 - off.x,
         config.UI.marginY - off.y
     );
 
     //row 1
     text(
-        "Branch opacity: " + treeOpacity + "%",
+        "Branch opacity: " + config.treeOpacity + "%",
         config.UI.marginX - off.x,
         config.UI.marginY + config.UI.rowHeight - off.y
     );
     text(
-        "Branch angle: " + round(degrees(angleSpread)) + "°",
+        "Branch angle: " + round(degrees(config.angleSpread)) + "°",
         config.UI.marginX + config.UI.colSpacing - off.x,
         config.UI.marginY + config.UI.rowHeight - off.y
     );
     text(
-        "Zoom: " + branchLength + "%",
+        "Zoom: " + config.branchLength + "%",
         config.UI.marginX + config.UI.colSpacing * 2 - off.x,
         config.UI.marginY + config.UI.rowHeight - off.y
     );
@@ -186,7 +186,7 @@ function createTree() {
     for (let i = 0; i < config.maxBranch; i++) {
         let angle = (TWO_PI * i) / config.maxBranch;
         treeRoots.push(
-            createBranchTree(createVector(0, 0), branchLength, 0, angle)
+            createBranchTree(createVector(0, 0), config.branchLength, 0, angle)
         );
     }
     colorMode(RGB, 255, 255, 255);
@@ -207,7 +207,7 @@ function createBranchTree(pos, len, depth, angle = 0) {
         config.BRANCH_START_HUE,
         config.BRANCH_END_HUE
     );
-    stroke(hueValue, 100, 100, treeOpacity / 100);
+    stroke(hueValue, 100, 100, config.treeOpacity / 100);
 
     line(pos.x, pos.y, endPos.x, endPos.y);
 
@@ -215,10 +215,20 @@ function createBranchTree(pos, len, depth, angle = 0) {
 
     if (depth < config.maxDepth) {
         branch.children.push(
-            createBranchTree(endPos, len * 0.7, depth + 1, angle + angleSpread)
+            createBranchTree(
+                endPos,
+                len * 0.7,
+                depth + 1,
+                angle + config.angleSpread
+            )
         );
         branch.children.push(
-            createBranchTree(endPos, len * 0.7, depth + 1, angle - angleSpread)
+            createBranchTree(
+                endPos,
+                len * 0.7,
+                depth + 1,
+                angle - config.angleSpread
+            )
         );
     }
 
