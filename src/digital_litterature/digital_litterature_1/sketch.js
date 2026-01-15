@@ -25,23 +25,11 @@ let config = {
         "🀵",
         "🀶",
         "🀷",
-        "🀸",
-        "🀿",
-        "🁆",
-        "🁍",
-        "🁔",
-        "🁕",
-        "🁖",
-        "🁗",
-        "🁘",
-        "🁙",
+        "🀾",
+        "🁅",
+        "🁌",
+        "🁓",
         "🁚",
-        "🁛",
-        "🁜",
-        "🁝",
-        "🁞",
-        "🁟",
-        "🁠",
         "🁡",
     ],
 };
@@ -60,8 +48,6 @@ function generateText(txt) {
         let code = char.charCodeAt(0);
         dominoEquiv += getDominoesChar(code) + "🁢"; //get equivalent in dominos + separator char
     }
-
-    console.warn("a");
 
     return dominoEquiv;
 }

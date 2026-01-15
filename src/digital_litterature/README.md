@@ -20,6 +20,6 @@ J'ai donc exploré comment retranscrire le code UNICODE en une chose originale, 
 
 La retranscription marche avec des soustractions successive, par exemple 13 sera exprimé avec un domino de 12 et un de 1 (`🂓🁤`).
 
-Après un peu de code, je me suis rendu compte qu'il y avait beaucoup trop de dominos par caractères, j'ai donc décidé d'étendre la liste passant de `🂓🂓🂓🂓🂓🂓🂓🂓🁤` à `🁡🁡🁥` pour le caractère `a` ou les dominos horizontaux valent `valeur écrite + 12`, donc `🁍 = 4 + 12 = 16`.
+Après un peu de code, je me suis rendu compte qu'il y avait beaucoup trop de dominos par caractères, j'ai donc décidé d'étendre la liste passant de `🂓🂓🂓🂓🂓🂓🂓🂓🁤` à `🁡🁡🀶` pour le caractère `a` ou les dominos horizontaux valent `valeur écrite + 12`, donc `🁍 = 4 + 12 = 16`.
 
 Ensuite le texte provient d'une API, et j'ai décidé de prendre la première dans une liste d'API de citation.
