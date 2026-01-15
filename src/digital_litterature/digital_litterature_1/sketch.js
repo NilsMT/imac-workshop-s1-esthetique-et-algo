@@ -34,8 +34,6 @@ let config = {
     ],
 };
 
-let input = "";
-
 ///////////////////////////////////
 
 function generateText(txt) {
@@ -76,24 +74,42 @@ function getDominoesChar(code) {
 
 ///////////////////////////////////
 
-function translateRandomQuote() {
-    const inputElement = document.getElementById("input");
-    const outputElement = document.getElementById("output");
+const inputElement = document.getElementById("input");
+const outputElement = document.getElementById("output");
 
-    //fetch random kanye quote to translate (pre-filling the input)
+//translate txt into dominos
+function translate(txt) {
+    outputElement.textContent = generateText(txt);
+}
+
+//fetch random quote from API
+function translateRandomQuote() {
     fetch("https://api.kanye.rest/")
         .then((response) => response.json())
         .then((data) => {
-            inputElement.textContent = data.quote;
-            //translation
-            outputElement.textContent = generateText(data.quote);
+            inputElement.value = data.quote;
+
+            translate(data.quote);
         })
         .catch((error) => console.error("Error fetching quote:", error));
 }
 
-//event listener to redo
-const btn = document.getElementById("regen").addEventListener("click", (ev) => {
-    translateRandomQuote();
-});
+function main() {
+    document.getElementById("input");
+    const btn = document.getElementById("regen");
 
-translateRandomQuote(); //RUN ONCE
+    //input listener for typing
+    inputElement.addEventListener("input", (ev) => {
+        translate(ev.target.value);
+    });
+
+    //btn listener
+    btn.addEventListener("click", () => {
+        translateRandomQuote();
+    });
+}
+
+main(); //SETUP
+
+//RUN ONCE
+translateRandomQuote();
