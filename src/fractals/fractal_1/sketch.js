@@ -1,28 +1,30 @@
 //config
-//UI data
-const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 800;
-const UI = {
-    marginX: 20, //left-right margin
-    marginY: 30, //top-bottom margin
-    rowHeight: 50, //vertical spacing between rows
-    colSpacing: 150, //horizontal spacing between sliders
+let config = {
+    //UI Data
+    CANVAS_HEIGHT: 800,
+    CANVAS_WIDTH: 800,
+    UI: {
+        marginX: 20, //left-right margin
+        marginY: 30, //top-bottom margin
+        rowHeight: 50, //vertical spacing between rows
+        colSpacing: 150, //horizontal spacing between sliders
+    },
+
+    //change \w slider
+    maxBranch: 8,
+    maxDepth: 7,
+    spawnRate: 50,
+    treeOpacity: 0,
+    angleSpread: Math.PI / 4,
+    branchLength: 100,
+
+    //others
+    PARTICLE_SIZE: 2,
+    BRANCH_SIZE: 1,
+    BRANCH_START_HUE: 240, //blue at start
+    BRANCH_END_HUE: 0, //red at end
+    PARTICLE_COLOR: [200, 0, 255],
 };
-
-//change \w slider
-let maxBranch = 8;
-let maxDepth = 7;
-let spawnRate = 50;
-let treeOpacity = 0;
-let angleSpread = Math.PI / 4;
-let branchLength = 100;
-
-//not in slider
-const PARTICLE_SIZE = 2;
-const BRANCH_SIZE = 1;
-const BRANCH_START_HUE = 240; //blue at start
-const BRANCH_END_HUE = 0; //red at end
-const PARTICLE_COLOR = [200, 0, 255];
 
 //sliders
 let numSlider;
@@ -38,7 +40,7 @@ let particles = [];
 
 //setup
 function setup() {
-    createCanvas(CANVAS_HEIGHT, CANVAS_WIDTH);
+    createCanvas(config.CANVAS_HEIGHT, config.CANVAS_WIDTH);
 
     frameRate(60);
 
@@ -57,22 +59,22 @@ function draw() {
     let newBranchLength = lenSlider.value();
 
     if (
-        maxBranch !== newMaxBranch ||
-        maxDepth !== newMaxDepth ||
-        spawnRate !== newSpawnRate ||
-        treeOpacity != newTreeOpacity ||
-        angleSpread != newAngleSpread ||
-        branchLength != newBranchLength
+        config.maxBranch !== newMaxBranch ||
+        config.maxDepth !== newMaxDepth ||
+        config.spawnRate !== newSpawnRate ||
+        config.treeOpacity != newTreeOpacity ||
+        config.angleSpread != newAngleSpread ||
+        config.branchLength != newBranchLength
     ) {
         treeRoots = [];
         particles = [];
 
-        maxBranch = newMaxBranch;
-        maxDepth = newMaxDepth;
-        spawnRate = newSpawnRate;
-        treeOpacity = newTreeOpacity;
-        angleSpread = newAngleSpread;
-        branchLength = newBranchLength;
+        config.maxBranch = newMaxBranch;
+        config.maxDepth = newMaxDepth;
+        config.spawnRate = newSpawnRate;
+        config.treeOpacity = newTreeOpacity;
+        config.angleSpread = newAngleSpread;
+        config.branchLength = newBranchLength;
 
         clear();
         background(0);
@@ -98,26 +100,38 @@ function draw() {
 //draw the UI sliders (using a flex-wrap like thing)
 function drawSliders() {
     //row 0
-    numSlider = createSlider(1, 15, maxBranch, 1);
-    numSlider.position(UI.marginX, UI.marginY);
+    numSlider = createSlider(1, 15, config.maxBranch, 1);
+    numSlider.position(config.UI.marginX, config.UI.marginY);
 
-    depthSlider = createSlider(1, 10, maxDepth, 1);
-    depthSlider.position(UI.marginX + UI.colSpacing, UI.marginY);
+    depthSlider = createSlider(1, 10, config.maxDepth, 1);
+    depthSlider.position(
+        config.UI.marginX + config.UI.colSpacing,
+        config.UI.marginY
+    );
 
-    spawnRateSlider = createSlider(0, 250, spawnRate, 1);
-    spawnRateSlider.position(UI.marginX + UI.colSpacing * 2, UI.marginY);
+    spawnRateSlider = createSlider(0, 250, config.spawnRate, 1);
+    spawnRateSlider.position(
+        config.UI.marginX + config.UI.colSpacing * 2,
+        config.UI.marginY
+    );
 
     //row 1
-    treeOpacitySlider = createSlider(0, 100, treeOpacity, 1);
-    treeOpacitySlider.position(UI.marginX, UI.marginY + UI.rowHeight);
+    treeOpacitySlider = createSlider(0, 100, config.treeOpacity, 1);
+    treeOpacitySlider.position(
+        config.UI.marginX,
+        config.UI.marginY + config.UI.rowHeight
+    );
 
-    angleSlider = createSlider(0, PI / 2, angleSpread, PI / 512);
-    angleSlider.position(UI.marginX + UI.colSpacing, UI.marginY + UI.rowHeight);
+    angleSlider = createSlider(0, PI / 2, config.angleSpread, PI / 512);
+    angleSlider.position(
+        config.UI.marginX + config.UI.colSpacing,
+        config.UI.marginY + config.UI.rowHeight
+    );
 
-    lenSlider = createSlider(0, 200, branchLength, 1);
+    lenSlider = createSlider(0, 200, config.branchLength, 1);
     lenSlider.position(
-        UI.marginX + UI.colSpacing * 2,
-        UI.marginY + UI.rowHeight
+        config.UI.marginX + config.UI.colSpacing * 2,
+        config.UI.marginY + config.UI.rowHeight
     );
 }
 
@@ -132,41 +146,45 @@ function drawUI() {
     };
 
     //row 0
-    text("Branches: " + maxBranch, UI.marginX - off.x, UI.marginY - off.y);
     text(
-        "Depth: " + maxDepth,
-        UI.marginX + UI.colSpacing - off.x,
-        UI.marginY - off.y
+        "Branches: " + config.maxBranch,
+        config.UI.marginX - off.x,
+        config.UI.marginY - off.y
+    );
+    text(
+        "Depth: " + config.maxDepth,
+        config.UI.marginX + config.UI.colSpacing - off.x,
+        config.UI.marginY - off.y
     );
     text(
         "Particles rate: " + spawnRate + "/frame",
-        UI.marginX + UI.colSpacing * 2 - off.x,
-        UI.marginY - off.y
+        config.UI.marginX + config.UI.colSpacing * 2 - off.x,
+        config.UI.marginY - off.y
     );
 
     //row 1
     text(
         "Branch opacity: " + treeOpacity + "%",
-        UI.marginX - off.x,
-        UI.marginY + UI.rowHeight - off.y
+        config.UI.marginX - off.x,
+        config.UI.marginY + config.UI.rowHeight - off.y
     );
     text(
         "Branch angle: " + round(degrees(angleSpread)) + "°",
-        UI.marginX + UI.colSpacing - off.x,
-        UI.marginY + UI.rowHeight - off.y
+        config.UI.marginX + config.UI.colSpacing - off.x,
+        config.UI.marginY + config.UI.rowHeight - off.y
     );
     text(
         "Zoom: " + branchLength + "%",
-        UI.marginX + UI.colSpacing * 2 - off.x,
-        UI.marginY + UI.rowHeight - off.y
+        config.UI.marginX + config.UI.colSpacing * 2 - off.x,
+        config.UI.marginY + config.UI.rowHeight - off.y
     );
 }
 
 //create the tree (data + visual)
 function createTree() {
     colorMode(HSB, 360, 100, 100);
-    for (let i = 0; i < maxBranch; i++) {
-        let angle = (TWO_PI * i) / maxBranch;
+    for (let i = 0; i < config.maxBranch; i++) {
+        let angle = (TWO_PI * i) / config.maxBranch;
         treeRoots.push(
             createBranchTree(createVector(0, 0), branchLength, 0, angle)
         );
@@ -176,20 +194,26 @@ function createTree() {
 
 //one iteration of the tree
 function createBranchTree(pos, len, depth, angle = 0) {
-    if (depth > maxDepth) return null;
+    if (depth > config.maxDepth) return null;
 
     let dx = len * sin(angle);
     let dy = -len * cos(angle);
     let endPos = p5.Vector.add(pos, createVector(dx, dy));
 
-    let hueValue = map(depth, 0, maxDepth, BRANCH_START_HUE, BRANCH_END_HUE);
+    let hueValue = map(
+        depth,
+        0,
+        config.maxDepth,
+        config.BRANCH_START_HUE,
+        config.BRANCH_END_HUE
+    );
     stroke(hueValue, 100, 100, treeOpacity / 100);
 
     line(pos.x, pos.y, endPos.x, endPos.y);
 
     let branch = { pos: pos.copy(), end: endPos.copy(), children: [] };
 
-    if (depth < maxDepth) {
+    if (depth < config.maxDepth) {
         branch.children.push(
             createBranchTree(endPos, len * 0.7, depth + 1, angle + angleSpread)
         );
@@ -213,8 +237,8 @@ function spawnParticle() {
 
 //move the particles, following a random sub-branch
 function moveParticles() {
-    stroke(PARTICLE_COLOR);
-    strokeWeight(PARTICLE_SIZE);
+    stroke(config.PARTICLE_COLOR);
+    strokeWeight(config.PARTICLE_SIZE);
 
     //for each particles
     for (let i = particles.length - 1; i >= 0; i--) {
@@ -235,5 +259,5 @@ function moveParticles() {
         }
     }
 
-    strokeWeight(BRANCH_SIZE);
+    strokeWeight(config.BRANCH_SIZE);
 }

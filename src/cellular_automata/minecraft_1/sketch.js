@@ -1,16 +1,16 @@
 //configurable
 let config = {
-    filled: false,
-    caveGenerationDuration: 30,
-    oreDiffusionDuration: 3,
-    cellState: {
+    FILLED: false,
+    CAVEGEN_DURATION: 30,
+    OREDIFF_DURATION: 3,
+    CELL_TYPE: {
         0: {
             name: "EMPTY",
             color: [150, 200, 255],
             minHeight: 0,
             maxHeight: 64,
             spawnPercentage: 1.0,
-            diffusionPercentage: 0,
+            diffusionChance: 0,
             diffusionCount: 0,
         },
         0.5: {
@@ -19,7 +19,7 @@ let config = {
             minHeight: 0,
             maxHeight: 255,
             spawnPercentage: 0,
-            diffusionPercentage: 0,
+            diffusionChance: 0,
             diffusionCount: 0,
         },
         1: {
@@ -28,7 +28,7 @@ let config = {
             minHeight: 0,
             maxHeight: 20,
             spawnPercentage: 1.0,
-            diffusionPercentage: 0,
+            diffusionChance: 0,
             diffusionCount: 0,
         },
         2: {
@@ -37,7 +37,7 @@ let config = {
             minHeight: 16,
             maxHeight: 255,
             spawnPercentage: 1.0,
-            diffusionPercentage: 0,
+            diffusionChance: 0,
             diffusionCount: 0,
         },
         3: {
@@ -47,7 +47,7 @@ let config = {
             minHeight: 19,
             maxHeight: 150,
             spawnPercentage: 0.03,
-            diffusionPercentage: 0.5,
+            diffusionChance: 0.5,
             diffusionCount: 6,
         },
         4: {
@@ -57,7 +57,7 @@ let config = {
             minHeight: 25,
             maxHeight: 200,
             spawnPercentage: 0.02,
-            diffusionPercentage: 0.35,
+            diffusionChance: 0.35,
             diffusionCount: 5,
         },
         5: {
@@ -67,7 +67,7 @@ let config = {
             minHeight: 40,
             maxHeight: 180,
             spawnPercentage: 0.01,
-            diffusionPercentage: 0.25,
+            diffusionChance: 0.25,
             diffusionCount: 5,
         },
         6: {
@@ -77,7 +77,7 @@ let config = {
             minHeight: 100,
             maxHeight: 255,
             spawnPercentage: 0.01,
-            diffusionPercentage: 0.4, // lower diffusion due to rarity
+            diffusionChance: 0.4, // lower diffusion due to rarity
             diffusionCount: 2,
         },
         7: {
@@ -87,7 +87,7 @@ let config = {
             minHeight: 120,
             maxHeight: 255,
             spawnPercentage: 0.005,
-            diffusionPercentage: 0.35,
+            diffusionChance: 0.35,
             diffusionCount: 2,
         },
         8: {
@@ -97,7 +97,7 @@ let config = {
             minHeight: 150,
             maxHeight: 255,
             spawnPercentage: 0.008,
-            diffusionPercentage: 0.35,
+            diffusionChance: 0.35,
             diffusionCount: 2,
         },
         9: {
@@ -107,7 +107,7 @@ let config = {
             minHeight: 220,
             maxHeight: 255,
             spawnPercentage: 0.01,
-            diffusionPercentage: 0.25, // very low diffusion
+            diffusionChance: 0.25, // very low diffusion
             diffusionCount: 1,
         },
         10: {
@@ -117,7 +117,7 @@ let config = {
             minHeight: 200,
             maxHeight: 255,
             spawnPercentage: 0.005,
-            diffusionPercentage: 0.3,
+            diffusionChance: 0.3,
             diffusionCount: 2,
         },
     },
@@ -137,10 +137,10 @@ const cooldown = 250; //ms
 
 let frame = 0;
 let phase = {
-    caveGeneration: config.caveGenerationDuration,
-    oreGeneration: config.caveGenerationDuration + 1, //1 frame
-    oreDiffusion: config.caveGenerationDuration + config.oreDiffusionDuration,
-    grassDiffusion: config.caveGenerationDuration + 4, //1 frame
+    caveGeneration: config.CAVEGEN_DURATION,
+    oreGeneration: config.CAVEGEN_DURATION + 1, //1 frame
+    oreDiffusion: config.CAVEGEN_DURATION + config.OREDIFF_DURATION,
+    grassDiffusion: config.CAVEGEN_DURATION + 4, //1 frame
 };
 
 function caveRule(i, j, n) {
@@ -283,7 +283,7 @@ function updateBoard() {
                 if (
                     cell > 2 &&
                     phase.oreDiffusion - frame <=
-                        config.cellState[cell].diffusionCount
+                        config.CELL_TYPE[cell].diffusionCount
                 ) {
                     oreDiffusion(i, j, newBoard);
                 }
@@ -310,8 +310,8 @@ function updateBoard() {
 function typeDistribution(i, j) {
     if (board[i][j] === 1) {
         let possibleCells = [];
-        for (let key in config.cellState) {
-            let cell = config.cellState[key];
+        for (let key in config.CELL_TYPE) {
+            let cell = config.CELL_TYPE[key];
             if (
                 cell.spawnPercentage > 0 &&
                 i >= cell.minHeight &&
@@ -330,10 +330,10 @@ function typeDistribution(i, j) {
             //weighted random selection
             let totalWeight = 0;
             for (let key of possibleCells)
-                totalWeight += config.cellState[key].spawnPercentage;
+                totalWeight += config.CELL_TYPE[key].spawnPercentage;
             let rand = random() * totalWeight;
             for (let key of possibleCells) {
-                rand -= config.cellState[key].spawnPercentage;
+                rand -= config.CELL_TYPE[key].spawnPercentage;
                 if (rand <= 0) {
                     return parseInt(key);
                 }
@@ -346,8 +346,8 @@ function typeDistribution(i, j) {
 function oreDiffusion(i, j, board) {
     const type = board[i][j];
 
-    const cell = config.cellState[type];
-    const diffusionChance = cell.diffusionPercentage;
+    const cell = config.CELL_TYPE[type];
+    const diffusionChance = cell.diffusionChance;
     const diffusionCount = cell.diffusionCount;
 
     //diffusion chance
@@ -394,7 +394,7 @@ function oreDiffusion(i, j, board) {
 function renderBoard() {
     for (let i = 0; i < row; i++) {
         for (let j = 0; j < col; j++) {
-            fill(config.cellState[board[i][j]].color);
+            fill(config.CELL_TYPE[board[i][j]].color);
             rect(j * cellSize, i * cellSize, cellSize, cellSize);
         }
     }
@@ -405,7 +405,7 @@ function fillBoard() {
     for (let i = 0; i < row; i++) {
         board[i] = [];
         for (let j = 0; j < col; j++) {
-            board[i][j] = config.filled ? 1 : Math.round(random(1));
+            board[i][j] = config.FILLED ? 1 : Math.round(random(1));
         }
     }
 }

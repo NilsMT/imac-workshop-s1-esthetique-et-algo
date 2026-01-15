@@ -1,14 +1,14 @@
 //configurable
 let config = {
-    cellSize: 10,
-    filled: false,
-    caveGenerationDuration: 15,
-    oreDiffusionDuration: 3,
+    CELL_SIZE: 10,
+    FILLED: false,
+    CAVEGEN_DURATION: 15,
+    OREDIFF_DURATION: 3,
 
-    dirtColumnLength: 3,
-    additionalDirtColumnLength: 3,
+    DIRTCOL_LENGTH: 3,
+    ADD_DIRTCOL_LENGTH: 3,
 
-    cellType: [
+    CELL_TYPE: [
         { id: 0, name: "EMPTY", color: [150, 200, 255] },
         { id: 1, name: "GRASS", color: [21, 194, 50] },
         { id: 2, name: "DIRT", color: [119, 69, 19] },
@@ -93,7 +93,7 @@ let config = {
         },
     ],
 
-    /*
+    /* potential candidates :
     COAL: 9472
     IRON: 8960
     COPPER: 8320
@@ -105,7 +105,7 @@ let config = {
     */
 };
 
-let oreType = config.cellType.filter((ore) => ore.id > 3);
+let oreType = config.CELL_TYPE.filter((ore) => ore.id > 3);
 //
 
 let row = 0;
@@ -126,10 +126,10 @@ function buildPhases() {
     let t = 0;
 
     return [
-        (t += config.caveGenerationDuration), //grass and stone spawn
+        (t += config.CAVEGEN_DURATION), //grass and stone spawn
         (t += 1), //ore spawn
         (t += 10), //ore expansion
-        (t += config.oreDiffusionDuration),
+        (t += config.OREDIFF_DURATION),
     ];
 }
 
@@ -145,9 +145,9 @@ let phase = buildPhases();
 //setup
 function setup() {
     row = 128;
-    col = (windowWidth * 2) / config.cellSize - 5;
+    col = (windowWidth * 2) / config.CELL_SIZE - 5;
 
-    createCanvas(config.cellSize * col + 5, config.cellSize * row + 5);
+    createCanvas(config.CELL_SIZE * col + 5, config.CELL_SIZE * row + 5);
 
     strokeWeight(0);
 
@@ -189,8 +189,8 @@ function draw() {
 
     //mouse drawing
     if (mouseIsPressed) {
-        let j = floor(mouseX / config.cellSize);
-        let i = floor(mouseY / config.cellSize);
+        let j = floor(mouseX / config.CELL_SIZE);
+        let i = floor(mouseY / config.CELL_SIZE);
 
         //out of bounds check
         if (i >= 0 && i < row && j >= 0 && j < col) {
@@ -301,7 +301,7 @@ function baseDiffusion(snapshot, i, j) {
     if (current === 2) {
         if (
             (top === undefined || top === 0) &&
-            i < threshold + config.cellType[3].range.min
+            i < threshold + config.CELL_TYPE[3].range.min
         ) {
             return 1; // GRASS
         } else {
@@ -310,7 +310,7 @@ function baseDiffusion(snapshot, i, j) {
             if (
                 dirtAbove >= threshold ||
                 top === 3 ||
-                i >= threshold + config.cellType[3].range.min
+                i >= threshold + config.CELL_TYPE[3].range.min
             ) {
                 return 3; // STONE
             }
@@ -355,7 +355,7 @@ function oreDiffusion(snapshot, i, j) {
 
     // Only diffuse ores
     if (cell > 3) {
-        const ore = config.cellType[cell];
+        const ore = config.CELL_TYPE[cell];
         const veinSize = ore.veinSize || 1;
         const expandRate = ore.expandRate || 0.5; // default 50% chance
 
@@ -395,12 +395,12 @@ function oreDiffusion(snapshot, i, j) {
 function renderBoard() {
     for (let i = 0; i < row; i++) {
         for (let j = 0; j < col; j++) {
-            fill(config.cellType[board[i][j]].color);
+            fill(config.CELL_TYPE[board[i][j]].color);
             rect(
-                j * config.cellSize,
-                i * config.cellSize,
-                config.cellSize,
-                config.cellSize
+                j * config.CELL_SIZE,
+                i * config.CELL_SIZE,
+                config.CELL_SIZE,
+                config.CELL_SIZE
             );
         }
     }
@@ -411,14 +411,14 @@ function resetBoard() {
     for (let i = 0; i < row; i++) {
         board[i] = [];
         for (let j = 0; j < col; j++) {
-            board[i][j] = (config.filled ? 1 : Math.round(random(1))) * 2;
+            board[i][j] = (config.FILLED ? 1 : Math.round(random(1))) * 2;
         }
     }
 
     for (let j = 0; j < col; j++) {
         stoneTreshhold.push(
-            config.dirtColumnLength +
-                Math.floor(random(config.additionalDirtColumnLength))
+            config.DIRTCOL_LENGTH +
+                Math.floor(random(config.ADD_DIRTCOL_LENGTH))
         );
     }
 }
