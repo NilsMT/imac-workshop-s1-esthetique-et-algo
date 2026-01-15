@@ -5,7 +5,8 @@ XXX
 ## Structure
 
 ```
-└───nom_projet : XXX
+├───digital_litterature_1 : Traduction littérale de texte en valeurs équivalente en domino
+└───digital_litterature_2 : Génération de parties de domino en fonction du texte
 ```
 
 ## Projets
