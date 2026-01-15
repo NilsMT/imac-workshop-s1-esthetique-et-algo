@@ -4,6 +4,7 @@ let config = {
     CANVAS_WIDTH: 800, //TODO: make it vary from text
     CELL_SIZE: 10,
     TEXT: "oui",
+    START_ORI: "x",
 };
 
 ////////////////////////////////
@@ -66,55 +67,51 @@ function giveAdequateDominos(code, json) {
     let result = "";
     let ori = json["0-0"] === DOMINOS["x"]["0-0"] ? "x" : "y";
     let keys = Object.keys(json);
-    let sum = 0;
-
-    console.warn("what should fit: " + code);
 
     //loop until no more to give
     while (code > 0) {
-        // stop if previous domino is [0,0]
+        //stop if previous domino is [0,0]
         if (previousDomino[0] === 0 && previousDomino[1] === 0) {
             break;
         }
 
-        // initialize previousDomino if it's the joker state
+        //initialize previousDomino if it's the joker state
         if (previousDomino[0] === -1 && previousDomino[1] === -1) {
             previousDomino = [0, code % 7];
         }
 
         // select subtraction candidates
         let candidates = keys.filter((k) => {
-            let sp = splitDominoValue(k); // [start, end]
-            let val = getDominoValue(k); // X*10 + Y
+            let sp = splitDominoValue(k); //[start, end]
+            let val = getDominoValue(k); //X*10 + Y
 
-            let fit = val <= code; // can this domino fit numerically?
-            let canBePlayed = sp[0] === previousDomino[1]; // must match previous domino's end
+            let fit = val <= code; //can this domino fit numerically?
+            let canBePlayed = sp[0] === previousDomino[1]; //must match previous domino's end
 
             return fit && canBePlayed;
         });
 
         if (candidates.length > 0) {
-            // choose one of them at random
+            //choose one of them at random
             let choice = Math.floor(Math.random() * candidates.length);
             let chosenKey = candidates[choice];
 
             let choseVal = getDominoValue(chosenKey);
             let choseSp = splitDominoValue(chosenKey);
 
-            // add to result
+            //add to result
             result += json[chosenKey];
             previousDomino = choseSp;
 
-            // subtract choice, then reiterate
+            //subtract choice, then reiterate
             code -= choseVal;
-            sum += choseVal;
         } else {
-            // no candidate found → break loop
+            //no candidate found, end of chain
             break;
         }
     }
 
-    console.warn("what fit: " + sum);
+    console.warn("what wasnt expressed: " + code);
 
     //add end character (so everything can be played after)
     result += SPE_DOMINOS[ori]["?-?"];
@@ -155,12 +152,9 @@ function setup() {
 
     let lst = config.TEXT.split(" ");
     let result = "";
-    let ori = "x";
+    let ori = config.START_ORI;
 
     lst.forEach((word) => {
-        //switch direction
-        ori = ori === "x" ? "y" : "x";
-
         let adequateWord = word
             .split("")
             .map((char) => {
@@ -174,6 +168,9 @@ function setup() {
 
         console.warn(word);
         console.log("%c" + adequateWord, "font-size: 24px");
+
+        //switch direction
+        ori = ori === "x" ? "y" : "x";
     });
 }
 
