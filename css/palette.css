@@ -28,6 +28,7 @@ h2 {
 
 canvas {
     border: solid var(--border) #000;
+    background-color: #fff;
 }
 
 /* Button */
