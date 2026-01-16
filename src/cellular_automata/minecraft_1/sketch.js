@@ -164,6 +164,7 @@ function setup() {
     col = windowWidth / cellSize - 5;
 
     createCanvas(cellSize * col + 5, cellSize * row + 5);
+    background(255);
 
     const container = createDiv();
     container.id("container");

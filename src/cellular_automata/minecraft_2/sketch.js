@@ -148,6 +148,7 @@ function setup() {
     col = (windowWidth * 2) / config.CELL_SIZE - 5;
 
     createCanvas(config.CELL_SIZE * col + 5, config.CELL_SIZE * row + 5);
+    background(255);
 
     strokeWeight(0);
 
