@@ -3,6 +3,8 @@ const CANVAS_HEIGHT = 400;
 
 function setup() {
     createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    background(255);
 }
 
 function draw() {
