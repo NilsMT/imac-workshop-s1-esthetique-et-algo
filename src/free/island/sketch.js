@@ -1,76 +1,80 @@
-//config
+/////////////////////////////
+//        CONFIG, CONST AND LET
+/////////////////////////////
+
 config = {
     CELL_SIZE: 5,
     ROW: 250,
     COLUMN: 250,
     KEY_COOLDOWN: 250,
-    FRAMERATE: 15,
-    NOISE_FREQUENCY: 5, //rise for more land and less water
+    FRAMERATE: 60,
+    NOISE_FREQUENCY: 15, //rise for more random shape on the island
     CELL_TYPE: [
         {
             name: "deep_water",
             color: [26, 95, 205],
+            weight: 1.5,
         },
         {
             name: "medium_water",
             color: [46, 115, 225],
+            weight: 1,
         },
         {
             name: "shallow_water",
             color: [66, 135, 245],
+            weight: 0.5,
         },
         {
             name: "sand",
             color: [214, 211, 124],
+            weight: 0.3,
         },
         {
             name: "grass",
             color: [60, 176, 68],
+            weight: 1,
         },
         {
             name: "high_grass",
             color: [20, 136, 28],
+            weight: 0.5,
         },
         {
             name: "hill",
             color: [71, 71, 71],
+            weight: 0.5,
         },
         {
             name: "moutain",
             color: [54, 54, 54],
+            weight: 0.25,
         },
         {
             name: "snow",
-            color: [173, 173, 173],
+            color: [200, 200, 200],
+            weight: 0.05,
         },
     ],
 };
 
-//autogenerate CELL_ID_BY_NAME
 let cellid = {};
-
-config.CELL_TYPE.map((cell, i) => {
-    cellid[i] = cell.name;
-});
-
-console.log(cellid);
-//
-
 let board = [];
 let row = config.ROW;
 let col = config.COLUMN;
 
-// Buttons
+//BUTTONS
 let pauseBtn;
-let lastETime = 0;
+let lastTTime = 0;
 
 let resetBtn;
 let lastRTime = 0;
 
 let selectPaintBtn;
 let lastATime = 0;
+let lastETime = 0;
 
-// Camera/zoom/drag variables
+//MOUSE MOVEMENTS VARIABLES
 let camera = {
     x: 0,
     y: 0,
@@ -79,7 +83,7 @@ let camera = {
 
 let dragStart = { x: 0, y: 0 };
 
-//map status
+//MAP STATUS
 let isPaused = true;
 let isEdited = false;
 let isDragging = false;
@@ -127,6 +131,7 @@ function cellRules(snapshot, i, j) {
 //        BOARD MANAGEMENT
 /////////////////////////////
 
+//update the board (model)
 function updateBoard() {
     if (isPaused) return;
 
@@ -143,7 +148,7 @@ function updateBoard() {
     }
 }
 
-//render board
+//render board (view)
 function renderBoard() {
     push();
     translate(-camera.x, -camera.y);
@@ -173,16 +178,36 @@ function renderBoard() {
     pop();
 }
 
-//function that init the matrix with 0
-function fillBoard(frequency = 3) {
-    board = [];
+//function that init the matrix with 0, using perlin noise
+// and weighted probability, thanks Copilot for that one, I suck at math :(
+function fillBoard(frequency = 5) {
+    // randomize noise each call
+    noiseSeed(Math.floor(Math.random() * 999999));
 
-    // get ordered CELL_TYPE indices (0,1,2,...)
+    board = [];
     const cellKeys = Object.keys(config.CELL_TYPE)
         .map(Number)
         .sort((a, b) => a - b);
-
     const levels = cellKeys.length;
+
+    //use weights from CELL_TYPE
+    const cellWeights = config.CELL_TYPE.map((c) => c.weight);
+    const sumWeight = cellWeights.reduce((a, b) => a + b, 0);
+    const normalizedWeights = cellWeights.map((w) => w / sumWeight);
+
+    //map center for radial falloff
+    const centerX = row / 2;
+    const centerY = col / 2;
+    const maxDist = Math.sqrt(centerX * centerX + centerY * centerY);
+
+    //hotspots, main island + secondary islands
+    const hotspots = [
+        { x: row * 0.7, y: col * 0.6, strength: 0.8, radius: row * 0.2 }, //main island
+        { x: row * 0.3, y: col * 0.3, strength: 0.5, radius: row * 0.15 }, //small island
+        { x: row * 0.5, y: col * 0.5, strength: 0.4, radius: row * 0.12 }, //tiny island
+        { x: row * 0.2, y: col * 0.7, strength: 0.3, radius: row * 0.1 }, //secondary island
+        //TODO: make it configurable ?
+    ];
 
     for (let i = 0; i < row; i++) {
         board[i] = [];
@@ -190,12 +215,42 @@ function fillBoard(frequency = 3) {
             const nx = i / row;
             const ny = j / col;
 
-            const n = noise(nx * frequency, ny * frequency); // 0..1
+            //base noise
+            let n = noise(nx * frequency, ny * frequency);
 
-            // map noise → index range
-            const idx = Math.min(levels - 1, Math.floor(n * levels));
+            //apply hotspot influence
+            let hotspotInfluence = 0;
+            for (let h of hotspots) {
+                const dx = i - h.x;
+                const dy = j - h.y;
+                const distH = Math.sqrt(dx * dx + dy * dy);
+                if (distH < h.radius) {
+                    hotspotInfluence += h.strength * (1 - distH / h.radius);
+                }
+            }
 
-            board[i][j] = cellKeys[idx];
+            //radial decretion (closer to the edge, closer to 0)
+            const dxC = i - centerX;
+            const dyC = j - centerY;
+            const distC = Math.sqrt(dxC * dxC + dyC * dyC);
+            const radialFalloff = 1 - Math.pow(distC / maxDist, 2); // quadratic falloff
+
+            //combine noise, falloff, hotspot
+            n = n * radialFalloff + hotspotInfluence;
+            n = Math.min(1, Math.max(0, n)); // clamp 0..1
+
+            //map n to weighted cell type (Copilot)
+            let cumulative = 0;
+            let selected = 0;
+            for (let k = 0; k < levels; k++) {
+                cumulative += normalizedWeights[k];
+                if (n <= cumulative) {
+                    selected = cellKeys[k];
+                    break;
+                }
+            }
+
+            board[i][j] = selected;
         }
     }
 }
@@ -204,6 +259,7 @@ function fillBoard(frequency = 3) {
 //        UTILS
 /////////////////////////////
 
+//pseudo-randomization
 function cellRand(i, j) {
     // deterministic pseudo-random in [0, 1)
     let x = i * 374761393 + j * 668265263;
@@ -211,30 +267,48 @@ function cellRand(i, j) {
     return ((x ^ (x >> 16)) >>> 0) / 4294967296;
 }
 
+//when you pause
 function handlePause() {
-    if (!isPaused) {
-        isPaused = true;
-        pauseBtn.html("paused");
-    } else {
-        isPaused = false;
-        pauseBtn.html("running");
-    }
+    isPaused = !isPaused;
+    updatePauseBtnStyle();
 }
 
+//when you reset
 function handleReset() {
     fillBoard(config.NOISE_FREQUENCY);
+    background(0);
+    updateBoard();
+    renderBoard();
 }
 
-function handlePaintCycle() {
-    selectedPaint++;
-
-    let pnt = config.CELL_TYPE[selectedPaint];
-
-    if (!pnt) {
-        pnt = config.CELL_TYPE[0];
-        selectedPaint = 0;
+//when you cycle through paint
+function handlePaintCycle(isReverse) {
+    if (isReverse) {
+        selectedPaint =
+            (selectedPaint - 1 + config.CELL_TYPE.length) %
+            config.CELL_TYPE.length;
+    } else {
+        selectedPaint = (selectedPaint + 1) % config.CELL_TYPE.length;
     }
-    selectPaintBtn.html("Paint: " + pnt.name);
+
+    updatePaintBtnStyle();
+}
+
+function updatePauseBtnStyle() {
+    pauseBtn.html(isPaused ? "► (T)" : "⏸ (T)");
+}
+
+function updatePaintBtnStyle() {
+    //get color in hex
+    let colorArr = config.CELL_TYPE[selectedPaint].color;
+    let colorHex = `rgb(${colorArr[0]}, ${colorArr[1]}, ${colorArr[2]})`;
+
+    //style html of button to have a colored square with value of cell inside
+    selectPaintBtn.html("(A-E)");
+    selectPaintBtn.style("background-color", colorHex);
+    selectPaintBtn.style("width", "80px");
+    selectPaintBtn.style("height", "40px");
+    selectPaintBtn.style("border", "2px solid black");
 }
 
 /////////////////////////////
@@ -248,32 +322,46 @@ function setup() {
     const container = createDiv();
     container.id("container");
 
-    pauseBtn = createButton("paused");
+    /////////////////
+
+    pauseBtn = createButton("");
     pauseBtn.mousePressed(handlePause);
     pauseBtn.parent(container);
+    //update style
+    updatePauseBtnStyle();
 
-    let resetBtn = createButton("reset board");
+    /////////////////
+
+    let resetBtn = createButton("Reset board (R)");
     resetBtn.mousePressed(handleReset);
     resetBtn.parent(container);
 
-    selectPaintBtn = createButton("Paint: " + config.CELL_TYPE[0].name);
+    /////////////////
+
+    selectPaintBtn = createButton("");
     selectPaintBtn.mousePressed(handlePaintCycle);
     selectPaintBtn.parent(container);
+    //update style
+    updatePaintBtnStyle();
+
+    /////////////////
 
     frameRate(config.FRAMERATE);
 
-    // Prevent context menu on canvas
+    //prevent context menu on canvas (right-click menu)
     document.addEventListener("contextmenu", (event) => {
         if (event.target.tagName === "CANVAS") {
             event.preventDefault();
         }
     });
 
-    //start board
-    fillBoard(config.NOISE_FREQUENCY);
-    background(0);
-    updateBoard();
-    renderBoard();
+    //autogenerate cell_id
+    config.CELL_TYPE.map((cell, i) => {
+        cellid[i] = cell.name;
+    });
+
+    //init board
+    handleReset();
 }
 
 //update
@@ -290,10 +378,10 @@ function draw() {
         renderBoard();
     }
 
-    if (keyIsDown(69) && millis() - lastETime > config.KEY_COOLDOWN) {
-        //e
+    if (keyIsDown(84) && millis() - lastTTime > config.KEY_COOLDOWN) {
+        //t
         handlePause();
-        lastETime = millis();
+        lastTTime = millis();
     }
 
     if (keyIsDown(82) && millis() - lastRTime > config.KEY_COOLDOWN) {
@@ -302,10 +390,14 @@ function draw() {
         lastRTime = millis();
     }
 
-    if (keyIsDown(65) && millis() - lastATime > cooldown) {
+    if (keyIsDown(65) && millis() - lastATime > config.KEY_COOLDOWN) {
         //a
-        handlePaint();
+        handlePaintCycle(true);
         lastATime = millis();
+    } else if (keyIsDown(69) && millis() - lastETime > config.KEY_COOLDOWN) {
+        //e
+        handlePaintCycle(false);
+        lastETime = millis();
     }
 
     if (mouseIsPressed) {
