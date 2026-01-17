@@ -29,4 +29,5 @@ body {
 
 #configEditor {
     width: 350px;
+    resize: none;
 }
